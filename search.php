@@ -18,6 +18,7 @@ while($row = $result->fetch_assoc() ){
     echo '<br /> Genre: '.$row['Genre'];
     echo '<br /> Price: '.$row['Price'];
     echo '<br /> Summary: ' .$row['Summary'];
+    echo '<br />      '    ;
 
 
 }
