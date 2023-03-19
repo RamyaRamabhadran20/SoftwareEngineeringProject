@@ -11,12 +11,22 @@ $result = $conn->query($sql);
 
 if ($result->num_rows > 0){
 while($row = $result->fetch_assoc() ){
-    echo $row["BookTitle"]."  ".$row["BookID"]."  ".$row["Author"]."  ".$row["Genre"]."  ".$row["Price"]."  ".$row["Summary"]."<br>";
+
+    echo '<br /> Book Title: ' .$row['BookTitle'];
+    echo '<br /> BookID: ' .$row['BookID'];
+    echo '<br /> Author: '.$row['Author'];
+    echo '<br /> Genre: '.$row['Genre'];
+    echo '<br /> Price: '.$row['Price'];
+    echo '<br /> Summary: ' .$row['Summary'];
+
+
 }
 } else {
-    echo "0 records";
+    echo "No results found with that search";
 }
 
 $conn->close();
 
 ?>
+
+
