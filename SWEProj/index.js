@@ -9,8 +9,8 @@ const { stringify } = require('querystring');
 const catalog = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'p08Tgr38QL_tb',
-    database: 'software_eng'
+    password: 'SWEPRoj2023',
+    database: 'Catalog'
 });
 
 //UserInfo Database
