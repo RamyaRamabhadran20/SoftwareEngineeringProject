@@ -35,7 +35,7 @@ app.post('/login', (req, res) => {
 
   req.on('end', () => {
     const email = body.split('=')[1].split('&')[0];
-    const password = body.split('=')[2];
+    const password = body.split('=')[2].split('&')[0];
     const query = `SELECT * FROM users WHERE email = '${email}' AND password = '${password}'`;
     db.query(query, (err, result) => {
       if (err) {

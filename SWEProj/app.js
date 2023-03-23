@@ -36,7 +36,7 @@ app.post('/register', (req, res) => {
   req.on('end', () => {
     const username = body.split('=')[1].split('&')[0];
     const email = body.split('=')[2].split('&')[0];
-    const password = body.split('=')[3];
+    const password = body.split('=')[3].split('&')[0];
     const query = `INSERT INTO users (username, email, password) VALUES ('${username}', '${email}', '${password}')`;
     db.query(query, (err, result) => {
       if (err) {
