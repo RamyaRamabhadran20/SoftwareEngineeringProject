@@ -9,7 +9,7 @@ const { stringify } = require('querystring');
 const catalog = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password:'SWEPRoj2023',
+    password: 'SWEPRoj2023',
     database: 'Catalog'
 });
 
@@ -69,7 +69,7 @@ const server = http.createServer((req, res) => {
     }
     else if(req.url === '/catalog'){
         //I dont understand this but this is what one of the tutorials did
-        catalog.query('SELECT * FROM catalogtable', (err, results) => {
+        catalog.query('SELECT * FROM catalog', (err, results) => {
             if(err){
                 console.error('Error querying from catalof database:', err);
                 res.writeHead(500, {'Content-Type': 'text/plain'});
