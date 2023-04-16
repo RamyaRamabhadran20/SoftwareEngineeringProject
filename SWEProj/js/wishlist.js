@@ -10,20 +10,19 @@ const connection = mysql.createConnection({
     database: 'RUListening'
   });
 connection.connect();
-let cart = [];
-let cartObj = {};
+let wishlist = [];
+let wishlistObj = {};
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-    app.get('/cart', function(req, res) {
+    app.get('/wishlist', function(req, res) {
         const BookID = req.body.BookID;
-        const cartSql = "SELECT * FROM Cart";
-            connection.query(cartSql, (err, result) =>{
+        const wishSql = "SELECT * FROM Wishlist";
+            connection.query(wishSql, (err, result) =>{
                 if (err) {
                     console.log(err);
                     res.sendStatus(500);
                 }
                 else{
-                    let totalPrice = 0; // initialize the total price to zero
                     result.forEach(function(row) {
                         //console.log(row.BookID);
 
@@ -36,18 +35,17 @@ app.use(bodyParser.json());
                         const book = objRes[0];
                         bookObj = {BookTitle: book.BookTitle, Price: book.Price};
                         //console.log(cartObj);
-                        cart.push(bookObj);
-                        totalPrice = totalPrice + book.Price;
-                        cartObj = {cart: cart, totalPrice: totalPrice};
+                        wishlist.push(bookObj);
+                        wishlistObj = {wishlist: wishlist};
                         });
                     });
                 }
-            res.send(cartObj);  
+            res.send(wishlistObj);  
             });
 
     });
-app.listen(8082, function() {
-    console.log('Server started http://localhost:8082');
+app.listen(8083, function() {
+    console.log('Server started http://localhost:8083');
   });
 
 

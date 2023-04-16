@@ -9,14 +9,17 @@ const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "SWEPRoj2023",
-  database: 'Catalog'
+  database: 'RUListening'
 });
+/*
 const connection2 = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "SWEPRoj2023",
   database: 'Cart'
-});
+});*/
+//WTF why did we do this twice
+/*
 const connection3 = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -29,18 +32,18 @@ const connection4 = mysql.createConnection({
   password: "SWEPRoj2023",
   database: 'Cart'
 });
-
+*/
 connection.connect();
-connection2.connect();
-connection3.connect();
-connection4.connect();
+//connection2.connect();
+//connection3.connect();
+//connection4.connect();
 
 let arr = [];
 //let searchArr = [];
 let bookObj = {};
 // Set up the route for displaying the catalog cards
 app.get('/', function(req, res) {
-  let query = 'SELECT * FROM catalogtable'; //CHANGE THIS LINE
+  let query = 'SELECT * FROM Catalog'; //CHANGE THIS LINE
 
   // check if search query is present in the url
   if(req.query.search){
@@ -82,7 +85,7 @@ app.get('/', function(req, res) {
         
     });
     const myJSON = JSON.stringify(arr);
-    res.send(myJSON);
+    //res.send(myJSON);
     const html = `
       <!DOCTYPE html>
       <html>
@@ -148,7 +151,7 @@ app.get('/', function(req, res) {
       </html>
     `;
 
-    //res.send(html);
+    res.send(html);
   });
 });
 
@@ -167,8 +170,8 @@ app.post('/cart', function(req, res) { //make another app.delete
   
 
   // check if the book with this BookID is already in the cart
-  const sql1 = "SELECT * FROM cartTable WHERE BookID=?";
-  connection2.query(sql1, [BookID], (err, result) => {
+  const sql1 = "SELECT * FROM Cart WHERE BookID=?";
+  connection.query(sql1, [BookID], (err, result) => {
     if (err) {
       console.log(err);
       res.sendStatus(500);
@@ -187,28 +190,24 @@ app.post('/cart', function(req, res) { //make another app.delete
       res.send(errorHtml);
     } else {
       // if there is no book with this BookID in the cart, add the book to the cart
-      const sql2 = "INSERT INTO cartTable (BookID, Book, Price) VALUES (?,?,?)"; // the SQL query to insert the BookTitle and Price into the cart table
-      connection2.query(sql2, [BookID, BookTitle, Price], (err, result) => { // execute the SQL query
+      const sql2 = "INSERT INTO Cart (BookID) VALUES (?)"; // the SQL query to insert the BookTitle and Price into the cart table
+      connection.query(sql2, [BookID], (err, result) => { // execute the SQL query
         if (err) {
           console.log(err);
           res.sendStatus(500);
         } else {
           console.log(result);
-          const sql3 = "SELECT * FROM cartTable"; // the SQL query to select all books from the cart table
-          connection2.query(sql3, function(error, results, fields) {
+          const sql3 = "SELECT * FROM Cart"; // the SQL query to select all books from the cart table
+          connection.query(sql3,[BookID], function(error, results, fields) {
             if (error) throw error;
             let cartItems = '';
             let totalPrice = 0; // initialize the total price to zero
             results.forEach(function(row) {
-
-
-
-
-              cartObj = {BookID:row.BookID, Book: row.BookTitle, Price: row.Price};
+              cartObj = {BookID:row.BookID, BookTitle: row.BookTitle, Price: row.Price};
               arrCart.push(cartObj);
 
               cartItems += `
-                <h2>${row.Book}</h2>
+                <h2>${row.BookTitle}</h2>
                 <p>Price: $${row.Price}</p>
                 <form action="/cart" method="delete">
                 <input type="hidden" name="BookID" value="${row.BookID}">
@@ -233,10 +232,10 @@ app.post('/cart', function(req, res) { //make another app.delete
             `;
 
             myJSONCart = JSON.stringify(arrCart);
-            res.send(myJSONCart);
+            //res.send(myJSONCart);
 
 
-            //res.send(cartHtml);//change it to card info directly
+            res.send(cartHtml);//change it to card info directly
           });
         }
       });
@@ -253,9 +252,9 @@ app.delete('/cart', function(req, res) { //make another app.delete
   const BookID = req.body.BookID;
 
   //Fill in the rest of the queries to delete and to display modified cart
-  const sql4 = "DELETE FROM cartTable WHERE BookID=?";
+  const sql4 = "DELETE FROM Cart WHERE BookID=?";
 
-    connection4.query(sql4, [BookID, BookTitle, Price], (err, result) => { // execute the SQL query
+    connection.query(sql4, [BookID, BookTitle, Price], (err, result) => { // execute the SQL query
       if (err) {
         console.log(err);
         res.sendStatus(500);
@@ -315,8 +314,8 @@ app.post('/wishlist', function(req, res) {
   const BookID = req.body.BookID;
 
   // check if the book with this BookID is already in the wishlist
-  const sql1 = "SELECT * FROM wishlistTable WHERE BookID=?";
-  connection3.query(sql1, [BookID], (err, result) => {
+  const sql6 = "SELECT * FROM Wishlist WHERE BookID=?";
+  connection.query(sql6, [BookID], (err, result) => {
     if (err) {
       console.log(err);
       res.sendStatus(500);
@@ -335,8 +334,8 @@ app.post('/wishlist', function(req, res) {
       res.send(errorHtml);
     } else {
       // if there is no book with this BookID in the wishlist, insert the book into the wishlist
-      const sql2 = "INSERT INTO wishlistTable (BookID, Book, Price) VALUES (?, ?, ?)";
-      connection3.query(sql2, [BookID, BookTitle, Price], (err, result) => {
+      const sql7 = "INSERT INTO wishlistTable (BookID, Book, Price) VALUES (?, ?, ?)";
+      connection.query(sql7, [BookID, BookTitle, Price], (err, result) => {
         if (err) {
           console.log(err);
           res.sendStatus(500);

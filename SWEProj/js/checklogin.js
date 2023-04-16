@@ -8,7 +8,7 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'SWEPRoj2023',
-  database: 'Catalog'
+  database: 'RUListening'
 });
 
 // Create session store
@@ -62,7 +62,7 @@ app.post('/login', (req, res) => {
     const password = body.split('=')[2];
 
     // Validate user credentials
-    const query = `SELECT * FROM users WHERE username='${username}' AND password='${password}'`;
+    const query = `SELECT * FROM Users WHERE username='${UserName}' AND password='${Password}'`;
     db.query(query, (err, results) => {
       if (err) {
         throw err;
@@ -70,8 +70,8 @@ app.post('/login', (req, res) => {
 
       if (results.length > 0) {
         // Create session for user
-        req.session.userId = results[0].id;
-        res.redirect('/catalog');
+        req.session.UserID = results[0].UserID;
+        res.redirect('/');
       } else {
         res.redirect('/login');
       }
@@ -80,9 +80,9 @@ app.post('/login', (req, res) => {
 });
 
 // Render Catalog Page
-app.get('/catalog', (req, res) => {
+app.get('/', (req, res) => {
   // Check if user is logged in
-  if (!req.session.userId) {
+  if (!req.session.UserID) {
     res.redirect('/login');
   } else {
     // Get catalog data from database and render page
@@ -100,7 +100,7 @@ app.get('/catalog', (req, res) => {
 app.listen(3000, () => {
   console.log('Server Started');
 });
-
+module.exports = app;
 //const authMiddleware = require('./authMiddleware'); slap this bitch in catalog and it should work
 /*app.get('/catalog', authMiddleware, (req, res) => {
     // Catalog code here
