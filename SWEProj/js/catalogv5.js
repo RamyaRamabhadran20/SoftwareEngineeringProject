@@ -2,8 +2,11 @@ const express = require('express');
 const mysql = require('mysql');
 const app = express();
 const bodyParser = require('body-parser');
-const checklogin = require('./checklogin'); // import the checklogin middleware
+const checkloginApp = require('./checklogin'); // import the checklogin middleware
+//const userid = require('./checklogin');
 
+//import {ID} from './checklogin';
+//console.log(ID);
 /*https://jonathan-holloway.medium.com/node-and-express-session-a23eb36a0528*/
 
 // Connect to the MySQL database CHANGE THIS FOR YOUR SELF 
@@ -133,12 +136,16 @@ app.delete('/deleteFromWishlist', function(req, res){
 
 
 //POST AND DELETE FOR CART
-app.post('/addToCart', checklogin, (req, res) => {
+app.post('/addToCart', (req, res) => {
+  const getID = require('./checklogin');
+  console.log(getID);
     //check to see if user is logged in then display this
     //if book exists in cart
     const BookID = req.body.BookID
-
-    const sql1 = "SELECT * FROM Cart WHERE BookID=?";
+    const UserID = user;
+    //console.log("HI");
+    //console.log(UserID);
+    const sql1 = `SELECT * FROM Cart WHERE BookID=?`;
     connection.query(sql1, [BookID], (err, result) => {
       if (err) {
         console.log(err);
@@ -160,7 +167,7 @@ app.post('/addToCart', checklogin, (req, res) => {
     }
     //if that book doesnt exist in cart
     else{
-        const cartQuery = "INSERT INTO Cart (BookID) VALUES (?)";
+        const cartQuery = `INSERT INTO Cart (UserID, BookID) VALUES ('${UserID}',?)`;
         connection.query(cartQuery, [BookID], (err, result) =>  {
             if (err) {
             console.log(err);

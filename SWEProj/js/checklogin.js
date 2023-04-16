@@ -4,6 +4,8 @@ const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 const app = express();
 
+
+let ID;
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -58,12 +60,15 @@ app.post('/login', (req, res) => {
   });
 
   req.on('end', () => {
-    const username = body.split('=')[1].split('&')[0];
+    const email = body.split('=')[1].split('&')[0];
     const password = body.split('=')[2];
 
+    //console.log(username);
+    //console.log(password);
     // Validate user credentials
-    const query = `SELECT * FROM Users WHERE username='${UserName}' AND password='${Password}'`;
+    const query = `SELECT * FROM Users WHERE UserEmail='${email}' AND Password='${password}'`;
     db.query(query, (err, results) => {
+      console.log(results);
       if (err) {
         throw err;
       }
@@ -71,7 +76,14 @@ app.post('/login', (req, res) => {
       if (results.length > 0) {
         // Create session for user
         req.session.UserID = results[0].UserID;
-        res.redirect('/');
+        ID = req.session.UserID;
+        console.log(ID);
+        const userid = ID;
+        const getID = () => {
+          return userid;
+        };
+        exports.getID = '2';
+        res.redirect('http://localhost:8081');
       } else {
         res.redirect('/login');
       }
@@ -86,21 +98,22 @@ app.get('/', (req, res) => {
     res.redirect('/login');
   } else {
     // Get catalog data from database and render page
-    const query = 'SELECT * FROM books';
+    console.log("hi");
+    const query = 'SELECT * FROM Catalog';
     db.query(query, (err, results) => {
       if (err) {
         throw err;
       }
-      res.render('catalog', { books: results });
+      res.render('http://localhost:8081', { books: results });
     });
   }
 });
-
 // Start Server
 app.listen(3000, () => {
   console.log('Server Started');
 });
-module.exports = app;
+
+//module.exports = ID;
 //const authMiddleware = require('./authMiddleware'); slap this bitch in catalog and it should work
 /*app.get('/catalog', authMiddleware, (req, res) => {
     // Catalog code here
