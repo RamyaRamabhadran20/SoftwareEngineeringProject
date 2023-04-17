@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Catalog</title>
+</head>
+<body>
+  <h1>Book Catalog</h1>
+  <p id="books"></p>
+  <script>
+    fetch('http://localhost:8081/')
+      .then(response => response.json())
+      .then(data => {
+        const books = document.getElementById('books');
+        data.forEach(book => {
+          const bookDetails = `Title: ${book.BookTitle}, Author: ${book.Author}, Genre: ${book.Genre}, Price: ${book.Price}, Narrator: ${book.Narrator}, Summary: ${book.Summary}`;
+          const p = document.createElement('p');
+          p.textContent = bookDetails;
+          books.appendChild(p);
+        });
+      })
+      .catch(error => console.error(error));
+  </script>
+</body>
+</html>
