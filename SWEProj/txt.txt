@@ -14,13 +14,12 @@ const session = require('express-session');
 const bcrypt = require('bcrypt');
 const path = require('path');
 const ejs = require('ejs');
-const MySQLStore = require('express-mysql-session')(session);
 
 
 let ID;
-exports.userId = 0;// create an instance of the express application
-const app = express();
 
+// create an instance of the express application
+const app = express();
 
 // set up the middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -40,19 +39,7 @@ const connection = mysql.createConnection({
 
 // connect to the MySQL database
 connection.connect();
-// Create session store
-const sessionStore = new MySQLStore({
-  expiration: 86400000,
-  createDatabaseTable: true,
-  schema: {
-    tableName: 'sessions',
-    columnNames: {
-      session_id: 'session_id',
-      expires: 'expires',
-      data: 'data'
-    }
-  }
-}, connection);
+
 // set up the routes
 app.get('/', (req, res) => {
   res.redirect('/login');
@@ -66,24 +53,29 @@ app.post('/login', (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  connection.query('SELECT id FROM accounts WHERE username = ?', [req.body.username], (err, results) => {
-    if (err) throw err;
-  
-    // assuming we get one result, get the user ID
-    //userId = results[0].id;
-    exports.userId = results[0].id;
-    ID = results[0].id;
-    //console.log(ex);
-    connection.query(`UPDATE sessions SET id = ${ID} WHERE id is null limit 1`);
-  });
+  const query1 = `SELECT * FROM accounts WHERE username='${username}'`;
+    connection.query(query1, (err, results) => {
+      console.log(results);
+      if (err) {
+        throw err;
+      }
+
+      if (results.length > 0) {
+        // Create session for user
+        req.session.id = results[0].id;
+        ID = results[0].id;
+        console.log("hi");
+        console.log(ID);
+      
+      }
+    });
 
   connection.query('SELECT * FROM accounts WHERE username = ?', [username], (error, results, fields) => {
     if (results.length > 0) {
       const hashedPassword = results[0].password;
       bcrypt.compare(password, hashedPassword, (err, result) => {
         if (result) {
-          //req.session.loggedin = true; //req.session.loggedin is a boolean variable
-          req.session.loggedin = { status: true, userId: ID }
+          req.session.loggedin = true; //req.session.loggedin is a boolean variable
           req.session.username = username;
           
           res.redirect('http://localhost:8081');
@@ -97,15 +89,11 @@ app.post('/login', (req, res) => {
       res.end();
     }
   });
-  //console.log(req.session);
-
 });
+
 app.get('/register', (req, res) => {
   res.sendFile(__dirname + '/register.html');
 });
-
-
-  //checkUserLoggedIn(req, res, req.session); // pass req.session as parameter
 
 app.post('/register', (req, res) => {
   const username = req.body.username;
@@ -118,9 +106,7 @@ app.post('/register', (req, res) => {
         console.log(error);
         res.send('An error occurred while registering.');
       } else {
-        //req.session.loggedin = true;
-        req.session.loggedin = { status: true, userId: ID }
-
+        req.session.loggedin = true;
         req.session.username = username;
         res.redirect('http://localhost:8081');
       }
@@ -130,7 +116,7 @@ app.post('/register', (req, res) => {
 });
 
 app.get('/homepage.html', (req, res) => {
-  if (req.session.loggedin.status) {
+  if (req.session.loggedin) {
     res.sendFile(path.join(__dirname, 'public', 'homepage.html'));
   } else {
     res.redirect('/login');
@@ -139,14 +125,13 @@ app.get('/homepage.html', (req, res) => {
 
 
 app.post('/logout', (req, res) => {
-  //req.session.loggedin = false;
-  req.session.loggedin = { status: false, userId: ID }
+  req.session.loggedin = false;
   res.redirect('/login');
 });
 
 
 
-//module.exports = app;
+
 // start the server
 app.listen(3000, () => {
   console.log('Server is running on port 3000');

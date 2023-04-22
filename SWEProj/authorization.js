@@ -1,12 +1,3 @@
-//make sure to run in terminal: 'npm init'; 'npm install express mysql2 bcrypt dotenv ejs'
-//file runs on http://localhost:3000/
-//to compile run in terminal: 'node index.js'
-//mySQL Details:  host: 'localhost', user: 'root', password: 'password', database: 'books'
-
-
-//to work on: adding a header feature that is a navigation bar; using functionality of navigation bar with sign in and sign out
-
-// require necessary modules
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
@@ -15,12 +6,13 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 const ejs = require('ejs');
 const MySQLStore = require('express-mysql-session')(session);
+const fs = require('fs');
 
-
-let ID;
-exports.userId = 0;// create an instance of the express application
+let userID;
+let userName;
+out = [];
+// create an instance of the express application
 const app = express();
-
 
 // set up the middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -37,22 +29,24 @@ const connection = mysql.createConnection({
   password: 'SWEPRoj2023',
   database: 'RUListening'
 });
+const sessionStore = new MySQLStore({
+    expiration: 86400000,
+    createDatabaseTable: true,
+    schema: {
+      tableName: 'sessions',
+      columnNames: {
+        session_id: 'session_id',
+        expires: 'expires',
+        data: 'data'
+      }
+    }
+  }, connection);
+  
 
 // connect to the MySQL database
 connection.connect();
-// Create session store
-const sessionStore = new MySQLStore({
-  expiration: 86400000,
-  createDatabaseTable: true,
-  schema: {
-    tableName: 'sessions',
-    columnNames: {
-      session_id: 'session_id',
-      expires: 'expires',
-      data: 'data'
-    }
-  }
-}, connection);
+
+
 // set up the routes
 app.get('/', (req, res) => {
   res.redirect('/login');
@@ -66,27 +60,22 @@ app.post('/login', (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  connection.query('SELECT id FROM accounts WHERE username = ?', [req.body.username], (err, results) => {
-    if (err) throw err;
-  
-    // assuming we get one result, get the user ID
-    //userId = results[0].id;
-    exports.userId = results[0].id;
-    ID = results[0].id;
-    //console.log(ex);
-    connection.query(`UPDATE sessions SET id = ${ID} WHERE id is null limit 1`);
-  });
-
   connection.query('SELECT * FROM accounts WHERE username = ?', [username], (error, results, fields) => {
     if (results.length > 0) {
+      out = results;
       const hashedPassword = results[0].password;
+     userID = results[0].id; // store the userID in the session
+     fs.writeFile('userID.txt', `${userID}`, (err) => {
+      if (err) throw err;
+      console.log('User ID saved to file');
+    });
+     //console.log(out);
+     //userID = 123;     
       bcrypt.compare(password, hashedPassword, (err, result) => {
         if (result) {
-          //req.session.loggedin = true; //req.session.loggedin is a boolean variable
-          req.session.loggedin = { status: true, userId: ID }
+          req.session.loggedin = true; //req.session.loggedin is a boolean variable
           req.session.username = username;
-          
-          res.redirect('http://localhost:8081');
+          res.redirect('/homepage.html');//redirect to catalog
         } else {
           res.send('Incorrect username and/or password!');
         }
@@ -97,15 +86,11 @@ app.post('/login', (req, res) => {
       res.end();
     }
   });
-  //console.log(req.session);
-
 });
+
 app.get('/register', (req, res) => {
   res.sendFile(__dirname + '/register.html');
 });
-
-
-  //checkUserLoggedIn(req, res, req.session); // pass req.session as parameter
 
 app.post('/register', (req, res) => {
   const username = req.body.username;
@@ -118,11 +103,10 @@ app.post('/register', (req, res) => {
         console.log(error);
         res.send('An error occurred while registering.');
       } else {
-        //req.session.loggedin = true;
-        req.session.loggedin = { status: true, userId: ID }
-
+        req.session.loggedin = true;
         req.session.username = username;
-        res.redirect('http://localhost:8081');
+        userName = req.session.username;
+        res.redirect('/homepage.html');
       }
       res.end();
     });
@@ -130,7 +114,7 @@ app.post('/register', (req, res) => {
 });
 
 app.get('/homepage.html', (req, res) => {
-  if (req.session.loggedin.status) {
+  if (req.session.loggedin) {
     res.sendFile(path.join(__dirname, 'public', 'homepage.html'));
   } else {
     res.redirect('/login');
@@ -139,14 +123,23 @@ app.get('/homepage.html', (req, res) => {
 
 
 app.post('/logout', (req, res) => {
-  //req.session.loggedin = false;
-  req.session.loggedin = { status: false, userId: ID }
+  req.session.loggedin = false;
+  //delete sessiosn table when user logs out
+  connection.query("DROP TABLE sessions");
+
+  //delete file holding userID
+  fs.unlink('userID.txt', (err) =>{
+    if (err) {
+      console.error(err);
+      return;
+    }
+  
+    console.log('File has been deleted');
+  });
+
   res.redirect('/login');
 });
 
-
-
-//module.exports = app;
 // start the server
 app.listen(3000, () => {
   console.log('Server is running on port 3000');

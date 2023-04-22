@@ -4,7 +4,6 @@ const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 const app = express();
 
-
 let ID;
 const db = mysql.createConnection({
   host: 'localhost',
@@ -66,7 +65,7 @@ app.post('/login', (req, res) => {
     //console.log(username);
     //console.log(password);
     // Validate user credentials
-    const query = `SELECT * FROM Users WHERE UserEmail='${email}' AND Password='${password}'`;
+    const query = `SELECT * FROM accounts WHERE email='${email}' AND password='${password}'`;
     db.query(query, (err, results) => {
       console.log(results);
       if (err) {
@@ -75,8 +74,8 @@ app.post('/login', (req, res) => {
 
       if (results.length > 0) {
         // Create session for user
-        req.session.UserID = results[0].UserID;
-        ID = req.session.UserID;
+        req.session.id = results[0].id;
+        ID = req.session.id;
         console.log(ID);
         const userid = ID;
         const getID = () => {
@@ -109,7 +108,7 @@ app.get('/', (req, res) => {
   }
 });
 // Start Server
-app.listen(3000, () => {
+app.listen(3001, () => {
   console.log('Server Started');
 });
 

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RUListening</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="js/frontend/test.css">
+    <script>
+      $(function() {
+        $("#search-box").autocomplete({
+          source: "/suggestions",
+          minLength: 2
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>My Table</h1>
+    
+    <form action="/" method="get">
+      <input type="text" name="search" id="search-box" placeholder="Search...">
+      <button type="submit" name="searchBy" value="title">Search by Title</button>
+      <button type="submit" name="searchBy" value="author">Search by Author</button>
+      <button type="submit" name="searchBy" value="genre">Search by Genre</button>
+      <button type="submit" name="searchBy" value="narrator">Search by Narrator</button>
+    </form>
+    <div id="suggestions"></div>
+    <table>
+      <thead>
+        <tr>
+          <th>BookTitle</th>
+          <th>BookID</th>
+          <th>Author</th>
+          <th>Genre</th>
+          <th>Price</th>
+          <th>Summary</th>
+          <th>Narrator</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{tableRows}}
+      </tbody>
+    </table>
+  </body>
+</html>
