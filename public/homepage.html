@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>RU Listening</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<header>
+        
+		<nav>
+            <div class="logo">
+                <img src="image/logo.jpg" alt="Logo">
+            </div>
+            <ul class="navbar-items"> <!-- add class name here -->
+              <li><a href="homepage.html">Home</a></li>
+              <li><a href="catalog">Shop</a></li>
+              <li><a href="#">Account</a></li>
+              <li><a href="#">Cart</a></li>
+              <li><a href="/cart"><i class="fa fa-shopping-cart"></i> Cart <span class="badge"><%=Cart.count%></span></a></li>
+
+            </span></a></li>
+              <span id="cart-count"></span>
+
+              
+              <form action="/logout" method="POST">
+                <button class = "sign-out" type="submit">LOG OUT</button>
+              </form>
+            </ul>
+          </nav>
+          
+	</header>
+	<main>
+        <section class = "block">
+            <section class="hero">
+                <h1 style="margin-bottom: 10px;">Welcome to RU Listening</h1>
+                <p style="text-align: center;">Shop our latest collections and find great deals on the products you love.</p>    
+                <a href="#" class="btn">Shop Now</a>
+            </section>
+                <h3>Featured Products</h3>  
+                <section class="gallery">
+                    <div class="gallery-item">
+                    <img src="image/R1.jpg">
+                    <h3>Pride and Prejudice</h3>
+                    <a href="#" class="btn">GET NOW</a>
+                    </div>
+                    <div class="gallery-item">
+                    <img src="image/H1.jpg">
+                    <h3>The Kite Runner</h3>
+                    <a href="#" class="btn">GET NOW</a>
+                    </div>
+                    <div class="gallery-item">
+                    <img src="image/H3.jpg">
+                    <h3>Little Women</h3>
+                    <a href="#" class="btn">GET NOW</a>
+                    </div>
+                </section>
+            </section>
+          
+	</main>
+	<footer>
+		<p>&copy; RU Listening</p>
+	</footer>
+</body>
+</html>
