@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Books</title>
+</head>
+<body>
+  <h1>Your Books</h1>
+
+  <% if (books.length === 0) { %>
+    <p>You haven't purchased any books yet.</p>
+  <% } else { %>
+    <ul>
+      <% books.forEach(book => { %>
+        <li>
+          <%= book.BookTitle %>
+          <a href="http://localhost:3001/audiobook?bookId=<%= book.BookID %>">
+            Listen to Book
+          </a>
+        </li>
+      <% }); %>
+    </ul>
+  <% } %>
+
+  <a href="/">Back to Home</a>
+</body>
+</html>
